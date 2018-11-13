@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="meny-arrow"></div>
+  <div class="contents">
+    <div class="container">
+      <div class="slideshow" id="slideshow">
+        <ol class="slides">
+          <li class="current">
+            <div class="description">
+              <h2>音乐识别提取（多音轨扒谱）</h2>
+              <p>你可以上传一段音乐，本应用可以识别其中不同乐器的种类，将其中不同乐器分离成不同音轨并反馈出乐谱。</p>
+            </div>
+            <div class="tiltview col">
+              <a href="#"><img src="../static/img/sheet_2.png"/></a>
+              <a href="#"><img src="../static/img/sheet_1.png"/></a>
+            </div>
+          </li>
+          <li>
+            <div class="description">
+              <h2>midi转化为乐谱</h2>
+              <p>上传midi格式的文件，转化为图片格式的乐谱。</p>
+            </div>
+            <div class="tiltview col">
+              <a href="#"><img src="../static/img/sheet_2.png"/></a>
+            </div>
+          </li>
+          <li>
+            <div class="description">
+              <h2>音乐再创作（和弦匹配）</h2>
+              <p>输入一段已有音乐，根据已有音乐的音高、调式、节奏，识别出该乐曲的和弦进行，并根据此和弦进行为乐曲匹配伴奏和弦。</p>
+            </div>
+            <div class="tiltview col">
+              <a href="#"><img src="../static/img/sheet_2.png"/></a>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <header class="codrops-header">
+        <h1>基于神经网络模型的音乐识别提取与再创作软件</h1>
+      </header>
+
+    </div>
+
+    <article>
+      <h3>&middot;音乐识别提取（多音轨扒谱）</h3>
+      <p>你可以上传一段音乐，本应用可以识别其中不同乐器的种类，将其中不同乐器分离成不同音轨并反馈出乐谱。</p>
+      <br>
+      <h3>&middot;音乐再创作（旋律填充）</h3>
+      <p>输入一段已有音乐，输入希望获得的时长，即可填充出一段新的旋律。</p>
+      <br>
+      <h3>&middot;音乐再创作（和弦匹配）</h3>
+      <p>输入一段已有音乐，根据已有音乐的音高、调式、节奏，识别出该乐曲的和弦进行，并根据此和弦进行为乐曲匹配伴奏和弦。</p>
+    </article>
+  </div>
+{% endblock %}
+{% block footer %}
+  <script src="../static/js/classie.js"></script>
+  <script src="../static/js/tiltSlider.js"></script>
+{% endblock %}
+</body>
+</html>

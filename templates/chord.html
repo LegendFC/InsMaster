@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>基于神经网络模型的音乐识别提取与再创作软件</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/demo.css" />
+	<script src="/static/js/modernizr.custom.js"></script>
+</head>
+<body>
+
+<div class="meny">
+  <h2>基于神经网络模型的音乐识别提取与再创作软件</h2>
+  <ul>
+    <li><a href="/index">主页</a></li>
+    <li><a href="/recognition">扒谱</a></li>
+    <li><a href="/melody">旋律填充</a></li>
+    <li><a href="/chord">和弦匹配</a></li>
+    <li><a href="/help">帮助</a></li>
+    <li><a href="/about">关于我们</a></li>
+  </ul>
+</div>
+<div class="meny-arrow"></div>
+<div class="contents">
+	<article>
+    	<h1>和弦匹配功能</h1>
+    </article>
+</div>
+<script src="/static/js/meny.js"></script>
+<script>
+	var meny = Meny.create({
+		menuElement: document.querySelector( '.meny' ),
+		contentsElement: document.querySelector( '.contents' ),
+		position: Meny.getQuery().p || 'left',
+		height: 200,
+		width: 260,
+		threshold: 40,
+		mouse: true,
+		touch: true
+	});
+	if( Meny.getQuery().u && Meny.getQuery().u.match( /^http/gi ) ) {
+		var contents = document.querySelector( '.contents' );
+		contents.style.padding = '0px';
+		contents.innerHTML = '<div class="cover"></div><iframe src="'+ Meny.getQuery().u +'" style="width: 100%; height: 100%; border: 0; position: absolute;"></iframe>';
+	}
+</script>
+</body>
+</html>
