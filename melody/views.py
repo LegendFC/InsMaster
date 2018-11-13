@@ -45,6 +45,7 @@ def profile_upload(file):
             fp.write(content)
         fp.close()
 
+
         # os.system(u'wine /home/wangsongyi/InsMaster/PlayItYourself_web\ /sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)#call_sheet.exe
         png_dir = path + '/png/'
         ly_path = png_dir + file_name + '.ly'
