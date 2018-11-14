@@ -5,34 +5,29 @@
 <title>基于神经网络模型的音乐识别提取与再创作软件</title>
   {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/demo.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/uploadify.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'uploadifive/uploadifive.css' %}"/>
     <script src="{% static 'js/jquery.js' %}"></script>
-	<script src="{% static 'js/jquery.uploadify.min.js' %}"></script>
+	<script src="{% static 'uploadifive/jquery.uploadifive.js' %}"></script>
 	<script src="{% static 'js/modernizr.custom.js' %}"></script>
-    <script src="{% static 'js/swfobject.js' %}"></script>
     {% csrf_token %}
      <script type="text/javascript">
-
-        $(document).ready(function() {
-          var file_name='';
-          $('#file_upload').uploadify({
-              'swf'  : '{%  static 'uploadify/uploadify.swf' %}',
-              'uploader'    : '/uploadify_script1/',
-              'fileTypeExts':'*.*',
-              'folder'    : '/upload',
-              'debug'   : true,
-              'auto'      : false,
-              'multi': true,
-              'simUploadLimit':1,
-              'buttonText':'选择文件',
-              'removeCompleted':false,
-              'sizeLimit':10240,
-              'preventCaching': false,
-              'onInit': function () {},
-              'onUploadComplete': function(file) {
-                document.getElementById("show-sheets").innerHTML=("<img src=\'../static/upload/png/" + file.name + "-page1.png\' width=\"630em\"/>")
-            }
-          });
+         $(function() {
+            $('#file_upload').uploadifive({
+                'uploadScript': 'upload/',
+                'fileType':'mp3',
+                'debug'   : true,
+                'auto'      : true,
+                'multi': true,
+                'simUploadLimit':1,
+                'buttonText':'选择音频文件',
+                'removeCompleted':false,
+                'sizeLimit':10240,
+                'preventCaching': false,
+                'onInit': function () {},
+                'onUploadComplete': function(file) {
+                    document.getElementById("show-sheets").innerHTML = ("<img src=\'../static/files/png/" + file.name + "-page1.png\' width=\"630em\"/>")
+                }
+            });
         });
     </script>
 </head>
@@ -64,8 +59,8 @@
         <div class="demo-box">
             <input id="file_upload" type="file" name="Filedata">
             <p>
-                <a href="javascript:$('#file_upload').uploadify('upload','*')">上传</a>
-                <a href="javascript:$('#file_upload').uploadify('cancel')">取消上传</a>
+                <a href="javascript:$('#file_upload').uploadifive('upload','*')">上传</a>
+                <a href="javascript:$('#file_upload').uploadifive('cancel')">取消上传</a>
                 <a href="/recognition/download/">下载</a>
             </p>
             <p><span id="id_span_msg"></span></p>
