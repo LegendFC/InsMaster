@@ -56,9 +56,10 @@ def uploadifive_script(request):
 def profile_upload(file):
     global uploaded_file_local_path
     if file:
-        path = os.path.join(os.getcwdu(), u'index/static/upload')
+        path = os.path.join(os.getcwdu(), u'static/files')
+        wav_path=path+'/wav'
         file_name = unicode(uuid.uuid1()) + u'-' + file.name
-        path_file = os.path.join(path, file_name)
+        path_file = os.path.join(wav_path, file_name)
         fp = open(path_file, u'wb')
         for content in file.chunks():
             fp.write(content)
@@ -76,7 +77,7 @@ def profile_upload(file):
 
         ctypes.util.find_library = proxy_find_library
 
-        CHECKPOINT_DIR = './train'  ##todo
+        CHECKPOINT_DIR = './model'  ##todo
 
         acoustic_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
         print('acoustic_checkpoint=' + acoustic_checkpoint)
@@ -183,7 +184,7 @@ def profile_upload(file):
             curNum = curNum + 1
             curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
         fzip.close()
-        download_file_local_path = path + u'/png/' + file.name + u'.zip'
+        uploaded_file_local_path = path + u'/png/' + file.name + u'.zip'
         return (True, file.name)
     return (False, u'Error_File_Name')
 
