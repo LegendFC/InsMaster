@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic import TemplateView
-# from recognition.views import uploadify_script as uploadify_script1
+from recognition.views import uploadifive_script as recognition_upload
 from melody.views import uploadifive_script as melody_upload
-# from recognition.views import download as download1
+from recognition.views import download as recognition_download
 from melody.views import download as melody_download
 
 
@@ -33,5 +33,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name=u'about.html')),
 
     url(r'^melody/upload/$',melody_upload),
-    url(r'^melody/download/$',melody_download)
+    url(r'^melody/download/$',melody_download),
+    url(r'^recognition/upload/$',recognition_upload),
+    url(r'^recognition/download/$',recognition_download)
 ]

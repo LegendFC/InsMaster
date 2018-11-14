@@ -38,7 +38,7 @@ uploaded_file_local_path = None
 
 
 @csrf_exempt
-def uploadify_script(request):
+def uploadifive_script(request):
     ret = u"0"
     file = request.FILES.get(u"Filedata", None)
     if file:
@@ -193,7 +193,6 @@ def profile_delete(request):
     if del_file:
         path_file = os.path.join(settings.MEDIA_ROOT, u'upload', del_file)
         os.remove(path_file)
-
 
 @csrf_exempt
 def download(request):
