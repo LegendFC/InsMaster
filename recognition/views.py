@@ -77,7 +77,7 @@ def profile_upload(file):
 
         ctypes.util.find_library = proxy_find_library
 
-        CHECKPOINT_DIR = './model'  ##todo
+        CHECKPOINT_DIR = '../model'  ##todo
 
         acoustic_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
         print('acoustic_checkpoint=' + acoustic_checkpoint)
