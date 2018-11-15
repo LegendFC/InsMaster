@@ -80,7 +80,7 @@ def profile_upload(file):
         CHECKPOINT_DIR = '../model'  ##todo
 
         acoustic_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
-        print('acoustic_checkpoint=' + acoustic_checkpoint)
+        print('acoustic_checkpoint=' + str(acoustic_checkpoint))
         hparams = tf_utils.merge_hparams(
             constants.DEFAULT_HPARAMS, model.get_default_hparams())
 
