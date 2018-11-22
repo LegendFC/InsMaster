@@ -23,6 +23,7 @@ import ctypes.util
 
 from magenta.common import tf_utils
 from magenta.music import audio_io
+from magenta.music import sequences_lib
 import magenta.music as mm
 from magenta.models.onsets_frames_transcription import model
 from magenta.models.onsets_frames_transcription import constants
@@ -56,7 +57,7 @@ def uploadifive_script(request):
 def profile_upload(file):
     global uploaded_file_local_path
     if file:
-        path = os.path.join(os.getcwdu(), u'static/files')
+        path = os.path.join(os.getcwdu(), u'static/files/recognition')
         wav_path=path+'/wav'
         file_name = unicode(uuid.uuid1()) + u'-' + file.name
         path_file = os.path.join(wav_path, file_name)
@@ -66,21 +67,10 @@ def profile_upload(file):
         fp.close()
 
 
-
-        orig_find_library = ctypes.util.find_library
-
-        def proxy_find_library(lib):
-            if lib == 'fluidsynth':
-                return 'libfluidsynth.so.1'
-            else:
-                return orig_find_library(lib)
-
-        ctypes.util.find_library = proxy_find_library
-
-        CHECKPOINT_DIR = '../model'  ##todo
+        CHECKPOINT_DIR = os.path.join(os.getcwdu(),'model')
 
         acoustic_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
-        print('acoustic_checkpoint=' + str(acoustic_checkpoint))
+        print('acoustic_checkpoint=' + acoustic_checkpoint)
         hparams = tf_utils.merge_hparams(
             constants.DEFAULT_HPARAMS, model.get_default_hparams())
 
@@ -106,9 +96,10 @@ def profile_upload(file):
                 'onsets/onset_probs_flat:0')
             frame_probs_flat = tf.get_default_graph().get_tensor_by_name(
                 'frame_probs_flat:0')
+            velocity_values_flat = tf.get_default_graph().get_tensor_by_name(
+                'velocity/velocity_values_flat:0')
 
         filename = path_file
-        # file_dir = './index/static/upload/' + filename
         content = open(filename, 'rb')
         uploaded = {filename: content.read()}  ##todo
 
@@ -116,7 +107,6 @@ def profile_upload(file):
         for fn in uploaded.keys():
             print('User uploaded file "{name}" with length {length} bytes'.format(
                 name=fn, length=len(uploaded[fn])))
-            open(fn, 'wb').write(uploaded[fn])
             wav_data = audio_io.samples_to_wav_data(
                 librosa.util.normalize(librosa.core.load(fn, sr=hparams.sample_rate)[0]),
                 hparams.sample_rate)
@@ -134,16 +124,21 @@ def profile_upload(file):
                     tf.train.Feature(bytes_list=tf.train.BytesList(
                         value=[wav_data]
                     )),
+                'velocity_range':
+                    tf.train.Feature(bytes_list=tf.train.BytesList(
+                        value=[music_pb2.VelocityRange().SerializeToString()]
+                    )),
             }))
             to_process.append(example.SerializeToString())
             print('Processing complete for', fn)
 
         session.run(iterator.initializer, {examples: to_process})
 
-        filenames, frame_logits, onset_logits = session.run([
+        filenames, frame_logits, onset_logits, velocity_values = session.run([
             batch.filenames,
             frame_probs_flat,
-            onset_probs_flat
+            onset_probs_flat,
+            velocity_values_flat
         ])
 
         print('Inference complete for', filenames[0])
@@ -152,18 +147,17 @@ def profile_upload(file):
 
         onset_predictions = onset_logits > .5
 
-        sequence_prediction = infer_util.pianoroll_to_note_sequence(
+        sequence_prediction = sequences_lib.pianoroll_to_note_sequence(
             frame_predictions,
             frames_per_second=data.hparams_frames_per_second(hparams),
             min_duration_ms=0,
-            onset_predictions=onset_predictions)
+            onset_predictions=onset_predictions,
+            velocity_values=velocity_values)
 
         midi_filename = (filenames[0] + '.mid').replace(' ', '_')
-        midi_filename = path + u'/midi' + midi_filename[midi_filename.find('upload') + 6:]
+        midi_filename = path + u'/midi' + midi_filename[midi_filename.find('wav') + 3:]
         uploaded_file_local_path = midi_filename
-        #os.system('touch /home/wangsongyi/InsMaster/PlayItYourself_web\ /index/static/upload/midi/xinjing.wav.mid')
-        #f = open(midi_filename, 'w')
-        #f.close()
+        
         midi_io.sequence_proto_to_midi_file(sequence=sequence_prediction, output_file=midi_filename)
 
         #os.system(u'sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)
@@ -172,19 +166,22 @@ def profile_upload(file):
         #    + path + u'/' + file_name + u' ' + path + u'/' + file.name
         #)
         png_dir = path + '/png/'
-        ly_path = png_dir + file_name + '.ly'
+        ly_dir  = path + '/ly/'
+        ly_path = ly_dir + file_name + '.ly'
         os.system(u'midi2ly --output=' + ly_path + ' ' + midi_filename)
         os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
 
-        fzip = zipfile.ZipFile(path + u'/png/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
+        fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
         curNum = 1
         curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
         while (os.path.exists(curFile)):
             fzip.write(curFile)
             curNum = curNum + 1
             curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
+        curFile = midi_filename
+        fzip.write(curFile)
         fzip.close()
-        uploaded_file_local_path = path + u'/png/' + file.name + u'.zip'
+        uploaded_file_local_path = path + u'/zip/' + file.name + u'.zip'
         return (True, file.name)
     return (False, u'Error_File_Name')
 
@@ -198,8 +195,6 @@ def profile_delete(request):
 @csrf_exempt
 def download(request):
     global uploaded_file_local_path
-    path = os.path.join(os.getcwdu(), u'index/static/upload/midi')
-    #file_name = path + u'/' + file
 
     if uploaded_file_local_path is None:
         return HttpResponse(u"<p>No MIDI files for download.</p>")

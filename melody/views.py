@@ -36,7 +36,7 @@ def uploadifive_script(request):
 def profile_upload(file):
     global download_file_local_path
     if file:
-        path = os.path.join(os.getcwdu(), u'static/files')
+        path = os.path.join(os.getcwdu(), u'static/files/melody')
         file_name = unicode(uuid.uuid1()) + u'-' + file.name
         midi_path=path+'/midi'
         path_file = os.path.join(midi_path, file_name)
@@ -48,12 +48,13 @@ def profile_upload(file):
 
         # os.system(u'wine /home/wangsongyi/InsMaster/PlayItYourself_web\ /sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)#call_sheet.exe
         png_dir = path + '/png/'
-        ly_path = png_dir + file_name + '.ly'
+        ly_dir  = path + '/ly/'
+        ly_path = ly_dir + file_name + '.ly'
         os.system(u'midi2ly --output=' + ly_path + ' ' + path_file)
         os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
         # os.system(u'lilypond --png --output='+file_name+' '+)
 
-        fzip = zipfile.ZipFile(path + u'/png/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
+        fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
         curNum = 1
         curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
         while (os.path.exists(curFile)):
@@ -61,7 +62,7 @@ def profile_upload(file):
             curNum = curNum + 1
             curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
         fzip.close()
-        download_file_local_path = path + u'/png/' + file.name + u'.zip'
+        download_file_local_path = path + u'/zip/' + file.name + u'.zip'
         return (True, file.name)
     return (False, u'Error_File_Name')
 
