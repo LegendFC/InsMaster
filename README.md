@@ -56,8 +56,8 @@ In the project directory, use `python manage.py runserver IP:Port` to run the dj
 
 Now use the browser to use it.
 
-![](https://github.com/LegendFC/InsMaster/blob/master/image/luping.gif)
+![](https://github.com/LegendFC/InsMaster/raw/master/image/luping.gif)
 
-![](https://github.com/LegendFC/InsMaster/blob/master/image/1.png)
+![](https://github.com/LegendFC/InsMaster/raw/master/image/1.png)
 
 
