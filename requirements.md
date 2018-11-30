@@ -18,4 +18,4 @@
 
 ###librosa
 
-###magenta or magenta-gpu == 0.3.6 or 0.3.14
+###magenta or magenta-gpu == 0.3.19
