@@ -25,7 +25,7 @@
                 'preventCaching': false,
                 'onInit': function () {},
                 'onUploadComplete': function(file) {
-                    document.getElementById("show-sheets").innerHTML = ("<img src=\'../static/files/recognition/png/" + file.name + "-page1.png\' width=\"630em\"/>")
+                    document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/recognition/pdf/"+file.name+".pdf\""+" width=630em height=810em></iframe>")
                 }
             });
         });
@@ -52,10 +52,13 @@
         <div id="show-sheets">
             上传并转换成功后会显示你的曲谱。<br>
             下面是一个例子：<br>
-            <img src='../static/img/example_1.png' width="630em"/>
+            <iframe src="../static/img/alice.pdf" width=630em height=810em>
+                This browser does not support PDFs. Please download the PDF to view it: <a href="../static/files/melody/pdf/alice.pdf">Download PDF</a>
+
+            </iframe>
         </div>
     	<h1>扒谱功能</h1>
-        <p>请上传音乐文件</p>
+        <p>请上传音乐文件（支持mp3,wav,ogg,aac等文件格式）</p>
         <div class="demo-box">
             <input id="file_upload" type="file" name="Filedata">
             <p>

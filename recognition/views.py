@@ -167,13 +167,15 @@ def profile_upload(file):
         #)
         png_dir = path + '/png/'
         ly_dir  = path + '/ly/'
+        pdf_dir = path + '/pdf/'
         ly_path = ly_dir + file_name + '.ly'
         os.system(u'midi2ly --output=' + ly_path + ' ' + midi_filename)
         os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
+        os.system(u'lilypond --pdf --output=' + pdf_dir + file.name + ' ' + ly_path)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
         curNum = 1
-        curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
+        curFile = path + u'/png/' + file.name + u'-pag e' + unicode(curNum) + u'.png'
         while (os.path.exists(curFile)):
             fzip.write(curFile)
             curNum = curNum + 1

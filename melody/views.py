@@ -48,10 +48,12 @@ def profile_upload(file):
 
         # os.system(u'wine /home/wangsongyi/InsMaster/PlayItYourself_web\ /sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)#call_sheet.exe
         png_dir = path + '/png/'
+        pdf_dir = path + '/pdf/'
         ly_dir  = path + '/ly/'
         ly_path = ly_dir + file_name + '.ly'
         os.system(u'midi2ly --output=' + ly_path + ' ' + path_file)
         os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
+        os.system(u'lilypond --pdf --output=' + pdf_dir + file.name + ' ' + ly_path)
         # os.system(u'lilypond --png --output='+file_name+' '+)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
