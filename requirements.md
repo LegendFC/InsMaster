@@ -1,21 +1,33 @@
-#environment
+## Installation
 
-##apt install
+Ubuntu is recommended for this project. If you use other systems, the insturctions below may not work.
 
-###libasound-dev
+### software installation
 
-###libjack-dev
+**Requirements:**`python==2.7`
 
-###ffmpeg
+You can use `apt-get install` or other commands to install the software below.
 
-##pip install
+`libasound-dev`
+`libjack-dev`
+`ffmpeg`
 
-###django
+### python packages
 
-###tensorflow
+Use `pip install` to get python packages.
 
-###simplejson
+`django==1.11`
 
-###librosa
+`tensorflow` or `tensorflow-gpu`
 
-###magenta or magenta-gpu == 0.3.19
+`simplejson`
+
+`librosa`
+
+`setuptools==39.0.1`
+
+`magenta==0.3.19` or `magenta-gpu==0.3.19`
+
+### other ways to build the project
+
+You can use a docker to finish all these installations if you are familar with it. It is much easier and more flexible. Or you can create a virtual python environment to do part of the installation.

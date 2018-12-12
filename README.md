@@ -10,7 +10,7 @@ The  project is bulit with python2.7.
 
 ## Getting Started
 
-You can try our app on  [our website](140.143.208.38:8010). If it is not available, you can contact us at once. Or, you can build the environment for the project in your own machine to test it.
+You can try our app on  [our website](http://140.143.208.38:8010). If it is not available, you can contact us at once. Or, you can build the environment for the project in your own machine to test it.
 
 ## Installation
 
