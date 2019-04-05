@@ -25,10 +25,14 @@ You can use `apt-get install` or other commands to install the software below.
 `libasound-dev`
 `libjack-dev`
 `ffmpeg`
+`fluidsynth`
 
 ### python packages
 
 Use `pip install` to get python packages.
+`pyfluidsynth`
+
+`sox`	
 
 `django==1.11`
 
