@@ -60,6 +60,7 @@ def profile_upload(file):
         path = os.path.join(os.getcwdu(), u'static/files/recognition')
         wav_path=path+'/wav'
         file_name = unicode(uuid.uuid1()) + u'-' + file.name
+        file_name_no_format=file_name.split('.')[0]
         path_file = os.path.join(wav_path, file_name)
         fp = open(path_file, u'wb')
         for content in file.chunks():
@@ -161,7 +162,7 @@ def profile_upload(file):
                          colab_ephemeral=False)
         # end
 
-        midi_filename = (file_name+ '.mid').replace(' ', '_')
+        midi_filename = (file_name_no_format+ '.mid').replace(' ', '_')
         midi_path = path + u'/midi/' + midi_filename
 
 
@@ -179,10 +180,13 @@ def profile_upload(file):
         png_dir = path + '/png/'
         ly_dir  = path + '/ly/'
         pdf_dir = path + '/pdf/'
-        ly_path = ly_dir + file_name + '.ly'
-        pdf_name= file_name+'.pdf'
-        pdf_path= pdf_dir+ file_name + '.pdf'
+        ly_path = ly_dir + file_name_no_format + '.ly'
+        pdf_name= file_name_no_format+'.pdf'
+        pdf_path= pdf_dir+ file_name_no_format
+
         os.system(u'midi2ly --output=' + ly_path + ' ' + midi_path)
+
+        #this method will touch '.pdf' and '.midi'
         os.system(u'lilypond --pdf --output=' + pdf_path + ' ' + ly_path)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
