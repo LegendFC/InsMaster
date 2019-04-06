@@ -25,13 +25,13 @@ from magenta.common import tf_utils
 from magenta.music import audio_io
 from magenta.music import sequences_lib
 import magenta.music as mm
-from magenta.models.onsets_frames_transcription import model
+from magenta.models.onsets_frames_transcription import configs
 from magenta.models.onsets_frames_transcription import constants
 from magenta.models.onsets_frames_transcription import data
-from magenta.models.onsets_frames_transcription import infer_util
+from magenta.models.onsets_frames_transcription import split_audio_and_label_data
+from magenta.models.onsets_frames_transcription import train_util
 from magenta.music import midi_io
 from magenta.protobuf import music_pb2
-
 
 # Create your views here.
 
@@ -67,98 +67,109 @@ def profile_upload(file):
         fp.close()
 
 
+        #music transcription
+
+        #get necessary
         CHECKPOINT_DIR = os.path.join(os.getcwdu(),'model')
 
         acoustic_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
         print('acoustic_checkpoint=' + acoustic_checkpoint)
-        hparams = tf_utils.merge_hparams(
-            constants.DEFAULT_HPARAMS, model.get_default_hparams())
-
-        with tf.Graph().as_default():
-            examples = tf.placeholder(tf.string, [None])
-
-            num_dims = constants.MIDI_PITCHES
-
-            batch, iterator = data.provide_batch(
-                batch_size=1,
-                examples=examples,
-                hparams=hparams,
-                is_training=False,
-                truncated_length=0)
-
-            model.get_model(batch, hparams, is_training=False)
-
-            session = tf.Session()
-            saver = tf.train.Saver()
-            saver.restore(session, acoustic_checkpoint)
-
-            onset_probs_flat = tf.get_default_graph().get_tensor_by_name(
-                'onsets/onset_probs_flat:0')
-            frame_probs_flat = tf.get_default_graph().get_tensor_by_name(
-                'frame_probs_flat:0')
-            velocity_values_flat = tf.get_default_graph().get_tensor_by_name(
-                'velocity/velocity_values_flat:0')
 
         filename = path_file
         content = open(filename, 'rb')
         uploaded = {filename: content.read()}  ##todo
+        #end
 
+        # model initialization
+        config = configs.CONFIG_MAP['onsets_frames']
+        hparams = config.hparams
+        hparams.use_cudnn = False
+        hparams.batch_size = 1
+
+        examples = tf.placeholder(tf.string, [None])
+
+        dataset = data.provide_batch(
+            examples=examples,
+            preprocess_examples=True,
+            hparams=hparams,
+            is_training=False)
+
+        estimator = train_util.create_estimator(
+            config.model_fn, CHECKPOINT_DIR, hparams)
+
+        iterator = dataset.make_initializable_iterator()
+        next_record = iterator.get_next()
+        # end
+
+        # preprocess
         to_process = []
         for fn in uploaded.keys():
             print('User uploaded file "{name}" with length {length} bytes'.format(
                 name=fn, length=len(uploaded[fn])))
-            wav_data = audio_io.samples_to_wav_data(
-                librosa.util.normalize(librosa.core.load(fn, sr=hparams.sample_rate)[0]),
-                hparams.sample_rate)
-
-            example = tf.train.Example(features=tf.train.Features(feature={
-                'id':
-                    tf.train.Feature(bytes_list=tf.train.BytesList(
-                        value=[fn.encode('utf-8')]
-                    )),
-                'sequence':
-                    tf.train.Feature(bytes_list=tf.train.BytesList(
-                        value=[music_pb2.NoteSequence().SerializeToString()]
-                    )),
-                'audio':
-                    tf.train.Feature(bytes_list=tf.train.BytesList(
-                        value=[wav_data]
-                    )),
-                'velocity_range':
-                    tf.train.Feature(bytes_list=tf.train.BytesList(
-                        value=[music_pb2.VelocityRange().SerializeToString()]
-                    )),
-            }))
-            to_process.append(example.SerializeToString())
+            wav_data = uploaded[fn]
+            example_list = list(
+                split_audio_and_label_data.process_record(
+                    wav_data=wav_data,
+                    ns=music_pb2.NoteSequence(),
+                    example_id=fn,
+                    min_length=0,
+                    max_length=-1,
+                    allow_empty_notesequence=True))
+            assert len(example_list) == 1
+            to_process.append(example_list[0].SerializeToString())
             print('Processing complete for', fn)
 
-        session.run(iterator.initializer, {examples: to_process})
+        sess = tf.Session()
 
-        filenames, frame_logits, onset_logits, velocity_values = session.run([
-            batch.filenames,
-            frame_probs_flat,
-            onset_probs_flat,
-            velocity_values_flat
+        sess.run([
+            tf.initializers.global_variables(),
+            tf.initializers.local_variables()
         ])
 
-        print('Inference complete for', filenames[0])
+        sess.run(iterator.initializer, {examples: to_process})
 
-        frame_predictions = frame_logits > .5
+        def input_fn(params):
+            del params
+            return tf.data.Dataset.from_tensors(sess.run(next_record))
+        # end
 
-        onset_predictions = onset_logits > .5
+        # inference
+        prediction_list = list(
+            estimator.predict(
+                input_fn,
+                yield_single_examples=False))
+        assert len(prediction_list) == 1
+
+        frame_predictions = prediction_list[0]['frame_probs_flat'] > .5
+        onset_predictions = prediction_list[0]['onset_probs_flat'] > .5
+        velocity_values = prediction_list[0]['velocity_values_flat']
 
         sequence_prediction = sequences_lib.pianoroll_to_note_sequence(
             frame_predictions,
             frames_per_second=data.hparams_frames_per_second(hparams),
             min_duration_ms=0,
+            min_midi_pitch=constants.MIN_MIDI_PITCH,
             onset_predictions=onset_predictions,
             velocity_values=velocity_values)
 
-        midi_filename = (filenames[0] + '.mid').replace(' ', '_')
-        midi_filename = path + u'/midi' + midi_filename[midi_filename.find('wav') + 3:]
-        uploaded_file_local_path = midi_filename
-        
+        # Ignore warnings caused by pyfluidsynth
+        import warnings
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+        mm.plot_sequence(sequence_prediction)
+        mm.play_sequence(sequence_prediction, mm.midi_synth.fluidsynth,
+                         colab_ephemeral=False)
+        # end
+
+        midi_filename = (file_name+ '.mid').replace(' ', '_')
+        midi_filename = path + u'/midi/' + midi_filename
+
+
         midi_io.sequence_proto_to_midi_file(sequence=sequence_prediction, output_file=midi_filename)
+
+        #end
+
+        uploaded_file_local_path = midi_filename
 
         #os.system(u'sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)
         #os.system(
