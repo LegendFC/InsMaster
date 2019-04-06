@@ -183,6 +183,7 @@ def profile_upload(file):
         ly_path = ly_dir + file_name_no_format + '.ly'
         pdf_name= file_name_no_format+'.pdf'
         pdf_path= pdf_dir+ file_name_no_format
+        pdf_download_path=pdf_path+'.pdf'
 
         os.system(u'midi2ly --output=' + ly_path + ' ' + midi_path)
 
@@ -193,7 +194,7 @@ def profile_upload(file):
 
         fzip.write(midi_path,midi_filename)
 
-        fzip.write(pdf_path,pdf_name)
+        fzip.write(pdf_download_path,pdf_name)
 
         fzip.close()
         uploaded_file_local_path = path + u'/zip/' + file.name + u'.zip'

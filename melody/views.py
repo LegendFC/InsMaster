@@ -38,6 +38,7 @@ def profile_upload(file):
     if file:
         path = os.path.join(os.getcwdu(), u'static/files/melody')
         file_name = unicode(uuid.uuid1()) + u'-' + file.name
+        file_name_no_format = file_name.split('.')[0]
         midi_path=path+'/midi'
         path_file = os.path.join(midi_path, file_name)
         fp = open(path_file, u'wb')
@@ -50,16 +51,18 @@ def profile_upload(file):
         png_dir = path + '/png/'
         pdf_dir = path + '/pdf/'
         ly_dir  = path + '/ly/'
-        ly_path = ly_dir + file_name + '.ly'
-        pdf_name= file_name+'.pdf'
-        pdf_path= pdf_dir+ file_name + '.pdf'
+        ly_path = ly_dir + file_name_no_format + '.ly'
+        pdf_name= file_name_no_format+'.pdf'
+        pdf_path= pdf_dir+ file_name_no_format
+        pdf_download_path=pdf_path+'pdf'
+
         os.system(u'midi2ly --output=' + ly_path + ' ' + path_file)
         os.system(u'lilypond --pdf --output=' + pdf_path + ' ' + ly_path)
         # os.system(u'lilypond --png --output='+file_name+' '+)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
 
-        fzip.write(pdf_path,pdf_name)
+        fzip.write(pdf_download_path,pdf_name)
 
         fzip.close()
         download_file_local_path = path + u'/zip/' + file.name + u'.zip'
