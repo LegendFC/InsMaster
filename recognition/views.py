@@ -165,7 +165,7 @@ def profile_upload(file):
         midi_path = path + u'/midi/' + midi_filename
 
 
-        midi_io.sequence_proto_to_midi_file(sequence=sequence_prediction, output_file=midi_filename)
+        midi_io.sequence_proto_to_midi_file(sequence=sequence_prediction, output_file=midi_path)
 
         #end
 
@@ -187,10 +187,8 @@ def profile_upload(file):
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
 
-        curFile = midi_path
-        fzip.write(curFile,midi_filename)
+        fzip.write(midi_path,midi_filename)
 
-        curFile = pdf_path
         fzip.write(pdf_path,pdf_name)
 
         fzip.close()

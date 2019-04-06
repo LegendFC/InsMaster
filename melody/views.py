@@ -51,18 +51,16 @@ def profile_upload(file):
         pdf_dir = path + '/pdf/'
         ly_dir  = path + '/ly/'
         ly_path = ly_dir + file_name + '.ly'
+        pdf_name= file_name+'.pdf'
+        pdf_path= pdf_dir+ file_name + '.pdf'
         os.system(u'midi2ly --output=' + ly_path + ' ' + path_file)
-        os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
-        os.system(u'lilypond --pdf --output=' + pdf_dir + file.name + ' ' + ly_path)
+        os.system(u'lilypond --pdf --output=' + pdf_path + ' ' + ly_path)
         # os.system(u'lilypond --png --output='+file_name+' '+)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
-        curNum = 1
-        curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
-        while (os.path.exists(curFile)):
-            fzip.write(curFile)
-            curNum = curNum + 1
-            curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
+
+        fzip.write(pdf_path,pdf_name)
+
         fzip.close()
         download_file_local_path = path + u'/zip/' + file.name + u'.zip'
         return (True, file.name)
