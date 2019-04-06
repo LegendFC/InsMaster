@@ -24,9 +24,9 @@
                 'sizeLimit':10240,
                 'preventCaching': false,
                 'onInit': function () {},
-                'onUploadComplete': function(obj) {
-                    console.log(obj)
-                    var file_name={{ save_name }}
+                'onUploadComplete': function(file,data) {
+                    console.log(data)
+                    var file_name=data.save_name
                     document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/recognition/pdf/"+file_name+".pdf\""+" width=630em height=810em></iframe>")
                 }
             });
