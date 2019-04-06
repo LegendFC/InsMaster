@@ -25,7 +25,8 @@
                 'preventCaching': false,
                 'onInit': function () {},
                 'onUploadComplete': function(file) {
-                    document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/recognition/pdf/"+file.name+".pdf\""+" width=630em height=810em></iframe>")
+                    var file_name={{ save_name }}
+                    document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/recognition/pdf/"+file_name+".pdf\""+" width=630em height=810em></iframe>")
                 }
             });
         });
