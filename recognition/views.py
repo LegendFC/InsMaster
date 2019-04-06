@@ -162,14 +162,14 @@ def profile_upload(file):
         # end
 
         midi_filename = (file_name+ '.mid').replace(' ', '_')
-        midi_filename = path + u'/midi/' + midi_filename
+        midi_path = path + u'/midi/' + midi_filename
 
 
         midi_io.sequence_proto_to_midi_file(sequence=sequence_prediction, output_file=midi_filename)
 
         #end
 
-        uploaded_file_local_path = midi_filename
+        uploaded_file_local_path = midi_path
 
         #os.system(u'sheet.exe '+ path + u'/' + file_name +  u' ' + path + u'/' + file.name)
         #os.system(
@@ -180,19 +180,19 @@ def profile_upload(file):
         ly_dir  = path + '/ly/'
         pdf_dir = path + '/pdf/'
         ly_path = ly_dir + file_name + '.ly'
-        os.system(u'midi2ly --output=' + ly_path + ' ' + midi_filename)
-        os.system(u'lilypond --png --output=' + png_dir + file.name + ' ' + ly_path)
-        os.system(u'lilypond --pdf --output=' + pdf_dir + file.name + ' ' + ly_path)
+        pdf_name= file_name+'.pdf'
+        pdf_path= pdf_dir+ file_name + '.pdf'
+        os.system(u'midi2ly --output=' + ly_path + ' ' + midi_path)
+        os.system(u'lilypond --pdf --output=' + pdf_path + ' ' + ly_path)
 
         fzip = zipfile.ZipFile(path + u'/zip/' + file.name + u'.zip', u'w', zipfile.ZIP_DEFLATED)
-        curNum = 1
-        curFile = path + u'/png/' + file.name + u'-pag e' + unicode(curNum) + u'.png'
-        while (os.path.exists(curFile)):
-            fzip.write(curFile)
-            curNum = curNum + 1
-            curFile = path + u'/png/' + file.name + u'-page' + unicode(curNum) + u'.png'
-        curFile = midi_filename
-        fzip.write(curFile)
+
+        curFile = midi_path
+        fzip.write(curFile,midi_filename)
+
+        curFile = pdf_path
+        fzip.write(pdf_path,pdf_name)
+
         fzip.close()
         uploaded_file_local_path = path + u'/zip/' + file.name + u'.zip'
         return (True, file.name)
