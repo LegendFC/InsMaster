@@ -24,8 +24,10 @@
                 'sizeLimit':1024,
                 'preventCaching': false,
                 'onInit': function () {},
-                'onUploadComplete': function(file) {
-                    document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/melody/pdf/"+file.name+".pdf\""+" width=630em height=810em></iframe>")
+                'onUploadComplete': function(file,data) {
+                    data=JSON.parse(data)
+                    var file_name=data["save_name"]
+                    document.getElementById("show-sheets").innerHTML=("<iframe src=\"../static/files/melody/pdf/"+file_name+".pdf\""+" width=630em height=810em></iframe>")
                 }
             });
         });

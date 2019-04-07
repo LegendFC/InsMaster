@@ -66,7 +66,7 @@ def profile_upload(file):
 
         fzip.close()
         download_file_local_path = path + u'/zip/' + file.name + u'.zip'
-        return (True, file.name)
+        return (True, file_name_no_format)
     return (False, u'Error_File_Name')
 
 
