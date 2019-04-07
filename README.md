@@ -44,7 +44,7 @@ Use `pip install` to get python packages.
 
 `setuptools==39.0.1`
 
-`magenta==0.3.19` or `magenta-gpu==0.3.19`
+`magenta==1.0.5` or `magenta-gpu==1.0.5`
 
 ### other ways to build the project
 
