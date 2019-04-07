@@ -54,7 +54,7 @@ def profile_upload(file):
         ly_path = ly_dir + file_name_no_format + '.ly'
         pdf_name= file_name_no_format+'.pdf'
         pdf_path= pdf_dir+ file_name_no_format
-        pdf_download_path=pdf_path+'pdf'
+        pdf_download_path=pdf_path+'.pdf'
 
         os.system(u'midi2ly --output=' + ly_path + ' ' + path_file)
         os.system(u'lilypond --pdf --output=' + pdf_path + ' ' + ly_path)
